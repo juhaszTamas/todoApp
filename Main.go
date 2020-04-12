@@ -31,7 +31,6 @@ func main() {
 
 //handleroot loads the root page.
 func handleRoot(w http.ResponseWriter, r *http.Request) {
-	fmt.Println(state)
 	listOfJSON, _ := json.Marshal(state)
 
 	w.Write(listOfJSON)
@@ -39,17 +38,10 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 
 //handleAddTodo adds a new todo.
 func handleAddTodo(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("before")
-
-	fmt.Println(state)
-
 	var todo Todo
 
 	json.NewDecoder(r.Body).Decode(&todo)
 	state = append(state, todo)
-	fmt.Println(state)
-
-	fmt.Println("after")
 
 	todoJSON, _ := json.Marshal(todo)
 	w.Write(todoJSON)
