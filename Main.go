@@ -48,8 +48,7 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 func handleGetTodo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	id, err := uuid.Parse(vars["todoId"])
-	if err != nil {
+	if id, err := uuid.Parse(vars["todoId"]); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -113,8 +112,7 @@ func handleUpdateTodo(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(string(body))
 	var update Todo
-	err = json.Unmarshal(body, &update)
-	if err != nil {
+	if err = json.Unmarshal(body, &update); err != nil {
 		fmt.Println(todo)
 		w.WriteHeader(http.StatusBadRequest)
 		return
