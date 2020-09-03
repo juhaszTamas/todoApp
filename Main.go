@@ -91,12 +91,57 @@ func handleAddTodo(w http.ResponseWriter, r *http.Request) {
 
 //handleUpdateTodo updates a todo.
 func handleUpdateTodo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
 
+	id, err := uuid.Parse(vars["todoId"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	todo, isPresent := state[id]
+	if !isPresent {
+		w.WriteHeader(http.StatusNoContent)
+		return
+	}
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Println(string(body))
+	var update Todo
+	err = json.Unmarshal(body, &update)
+	if err != nil {
+		fmt.Println(todo)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	update.ID = todo.ID
+	state[todo.ID] = update
+	writeResponse(update, w)
 }
 
 //handleDeleteTodo deletes a todo.
 func handleDeleteTodo(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
 
+	id, err := uuid.Parse(vars["todoId"])
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	_, isPresent := state[id]
+	if !isPresent {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	delete(state, id)
+	w.WriteHeader(http.StatusNoContent)
 }
 
 //Todo type
