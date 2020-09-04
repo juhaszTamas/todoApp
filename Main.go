@@ -128,8 +128,7 @@ func handleDeleteTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, isPresent := state[id]
-	if !isPresent {
+	if _, isPresent := state[id]; !isPresent {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
