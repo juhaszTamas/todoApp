@@ -18,7 +18,7 @@ func main() {
 
 	//routes
 
-	r.HandleFunc("/todos", handleRoot).Methods("GET")
+	r.HandleFunc("/todos", handleGetAllTodos).Methods("GET")
 
 	r.HandleFunc("/todos", handleAddTodo).Methods("POST")
 
@@ -34,8 +34,8 @@ func main() {
 	}
 }
 
-//handleroot loads the root page.
-func handleRoot(w http.ResponseWriter, r *http.Request) {
+//handleGetAllTodos loads the root page.
+func handleGetAllTodos(w http.ResponseWriter, r *http.Request) {
 	if len(state) <= 0 {
 		state = make(map[uuid.UUID]Todo)
 	}
@@ -48,7 +48,8 @@ func handleRoot(w http.ResponseWriter, r *http.Request) {
 func handleGetTodo(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 
-	if id, err := uuid.Parse(vars["todoId"]); err != nil {
+	id, err := uuid.Parse(vars["todoId"])
+	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
@@ -74,11 +75,8 @@ func handleAddTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(string(body))
 	var todo Todo
-	err = json.Unmarshal(body, &todo)
-	if err != nil {
-		fmt.Println(todo)
+	if err = json.Unmarshal(body, &todo); err != nil {
 		w.WriteHeader(400)
 		return
 	}
@@ -110,10 +108,8 @@ func handleUpdateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Println(string(body))
 	var update Todo
 	if err = json.Unmarshal(body, &update); err != nil {
-		fmt.Println(todo)
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
